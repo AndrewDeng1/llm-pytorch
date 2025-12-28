@@ -3,17 +3,32 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 # hyperparameters
-batch_size = 64  # num independent sequences processed in parallel
-block_size = 256  # maximum context length for predictions
-max_iters = 5000
-eval_interval = 500
-learning_rate = 3e-4
+batch_size = 32  # num independent sequences processed in parallel (reduced for CPU)
+block_size = 64  # maximum context length for predictions (reduced for speed)
+max_iters = 3000
+eval_interval = 300
+learning_rate = 1e-3
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-eval_iters = 200
-n_embd = 384
-n_head = 6
-n_layer = 6
+print("Device:", device)
+
+eval_iters = 50  # reduced from 200 to speed up evaluation
+n_embd = 128  # reduced from 384 (fewer parameters)
+n_head = 4  # reduced from 6
+n_layer = 3  # reduced from 6 (much faster)
 dropout = 0.2
+
+# ORIGINAL HYPERPARAMETERS
+# batch_size = 64  # num independent sequences processed in parallel
+# block_size = 256  # maximum context length for predictions
+# max_iters = 5000
+# eval_interval = 500
+# learning_rate = 3e-4
+# device = 'cuda' if torch.cuda.is_available() else 'cpu'
+# eval_iters = 200
+# n_embd = 384
+# n_head = 6
+# n_layer = 6
+# dropout = 0.2
 # -----
 
 torch.manual_seed(67)
@@ -323,4 +338,4 @@ for iter in range(max_iters):
 # generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
 print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
-#open('more.txt', 'w').write(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
+open('more.txt', 'w').write(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
